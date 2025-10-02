@@ -21,10 +21,10 @@ export async function POST(request: Request) {
             );
         }
 
-        const isCodeValid = user.verifyCode === code
+        const isCodeValid = user.verifyCode === code // checking code
         const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date()
         if (isCodeValid && isCodeNotExpired) {
-            user.isVerified = true;
+            user.isVerified = true; // updating user verification status
             await user.save()
 
             return Response.json(
