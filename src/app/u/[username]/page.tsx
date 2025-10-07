@@ -1,11 +1,11 @@
-import React from 'react'
+'use client'
 
-const page = () => {
+
+
+export default function sendMessage() {
   return (
     <div>
       Message Page
     </div>
   )
 }
-
-export default page
