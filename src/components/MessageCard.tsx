@@ -25,6 +25,7 @@ import { Message } from "@/model/User"
 import axios from "axios"
 import { ApiResponse } from "@/types/ApiResponse"
 import { toast } from "sonner"
+import dayjs from "dayjs"
 
 type MessageCardProp ={
     message: Message
@@ -39,9 +40,10 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProp) => {
         //(message._id  )
     }
   return (
-    <Card>
+    <Card className="card-bordered">
   <CardHeader>
-    <CardTitle>Card Title</CardTitle>
+    <div className="flex justify-between items-start">
+    <CardTitle>{message.content}</CardTitle>
      <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="destructive"><X className="w-5 h-5" /></Button>
@@ -60,7 +62,10 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProp) => {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-    <CardDescription>Card Description</CardDescription>
+    </div>
+    <div className="text-sm">
+          {dayjs(message.createdAt).format('MMM D, YYYY h:mm A')}
+        </div>
   </CardHeader>
   <CardContent>
   </CardContent>
