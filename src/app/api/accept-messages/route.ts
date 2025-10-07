@@ -6,7 +6,7 @@ import { User } from "next-auth";
 
 
 export async function POST(request: Request) {
-    dbConnect()
+    await dbConnect()
 
     const session = await getServerSession(authOptions);
     const user: User = session?.user as User
@@ -88,7 +88,7 @@ export async function GET(request: Request){
 
     return Response.json({
             success: true,
-            isAcceptingMessages: foundUser.isAcceptingMessage
+            isAcceptingMessage: foundUser.isAcceptingMessage
         },
         {status: 200}
     )

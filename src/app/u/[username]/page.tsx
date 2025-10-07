@@ -2,11 +2,13 @@
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Separator } from "@/components/ui/separator"
 import { messageSchema } from "@/schemas/messageSchema"
 import { ApiResponse } from "@/types/ApiResponse"
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios, { AxiosError } from "axios"
 import { Loader2 } from "lucide-react"
+import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useState } from "react"
 import {  useForm } from "react-hook-form"
@@ -85,6 +87,14 @@ export default function sendMessage() {
           </div>
         </form>
       </Form>
+
+      <Separator className="my-6" />
+      <div className="text-center">
+        <div className="mb-4">Get Your Message Board</div>
+        <Link href={'/sign-up'}>
+          <Button>Create Your Account</Button>
+        </Link>
+      </div>
       </div>
 
   )

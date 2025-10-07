@@ -22,7 +22,7 @@ import {
 import { Button } from "./ui/button"
 import { X } from "lucide-react"
 import { Message } from "@/model/User"
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 import { ApiResponse } from "@/types/ApiResponse"
 import { toast } from "sonner"
 import dayjs from "dayjs"
@@ -34,10 +34,15 @@ type MessageCardProp ={
 
 const MessageCard = ({ message, onMessageDelete }: MessageCardProp) => {
     const handleDeleteConfirm = async () => {
-        const response = await axios.delete<ApiResponse>(`/api/delete-message/${message._id}`)
-        toast(response.data.message)
-        onMessageDelete(message)
-        //(message._id  )
+       try {
+         const response = await axios.delete<ApiResponse>(`/api/delete-message/${message._id}`)
+         toast(response.data.message)
+         onMessageDelete(message)
+         //(message._id  )
+       } catch (error) {
+        const axiosError = error as AxiosError<ApiResponse>
+        toast('Error', {description: axiosError.response?.data.message ?? 'Failed to delete Message'})
+       }
     }
   return (
     <Card className="card-bordered">
