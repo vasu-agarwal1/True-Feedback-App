@@ -61,8 +61,8 @@ const page = () => {
                           </FormControl>
                          <FormMessage />
                         </FormItem>
-              )}
-         />
+                 )}
+              />
             <FormField
                     name="password"
                     control={form.control}
