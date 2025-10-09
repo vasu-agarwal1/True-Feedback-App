@@ -107,7 +107,7 @@ const page = () => {
 
       <div className="mb-4">
         <h2 className="text-lg font-semibold mb-2">Copy Your Unique Link</h2>{' '}
-        <div className="flex items-center">
+        <div className="flex items-center border p-2 rounded-2xl bg-zinc-100">
           <input
             type="text"
             value={profileUrl}
@@ -157,8 +157,10 @@ const page = () => {
         ) : (
           <p>No messages to display.</p>
         )}
+
       </div>
     </div>
+    
   );
   
 }
