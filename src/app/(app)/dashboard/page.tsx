@@ -17,6 +17,9 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
 const page = () => {
+  // this file is the dashboard for the user
+  // it shows the messages received by the user
+  // and allows the user to toggle the accept messages switch
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isSwitchLoading, setIsSwitchLoading] = useState(false)
