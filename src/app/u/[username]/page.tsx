@@ -14,12 +14,24 @@ import { useState } from "react"
 import {  useForm } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
+import { useCompletion } from '@ai-sdk/react'
+
+const specialchar = '||'
+
+const parseStringMessages = (messageString: string): string[] => {
+  return messageString.split(specialchar)
+}
+
+const initialMessageString =
+  "What's your favorite movie?||Do you have any pets?||What's your dream job?"
 
 
 
 export default function sendMessage() {
   const params = useParams<{ username: string }>()
   const username = params.username
+
+  const {} = useCompletion({})
 
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
