@@ -16,6 +16,9 @@ const page = () => {
     const router = useRouter()
 
     //zod implementation
+    // it is used to validate the form data
+    // it is also used to infer the form data type
+    // from the schema
     const form = useForm({
         resolver: zodResolver(signInSchema),
         defaultValues: {
