@@ -15,6 +15,7 @@ import {  useForm } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
 import { useCompletion } from '@ai-sdk/react'
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 const specialchar = '||'
 
@@ -31,7 +32,15 @@ export default function sendMessage() {
   const params = useParams<{ username: string }>()
   const username = params.username
 
-  const {} = useCompletion({})
+  const {
+    complete,
+    completion,
+    isLoading: isSuggestLoading,
+    error,
+  } = useCompletion({
+    api: '/api/suggest-message',
+    initialCompletion: initialMessageString
+  })
 
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
@@ -61,6 +70,15 @@ export default function sendMessage() {
       setIsLoading(false)
     }
   }
+
+  const fetchSuggestedMessages = async () => {
+    try {
+      complete('')
+    } catch (error) {
+      console.error('Error fetching suggested messages:', error)
+    }
+  }
+
   return (
     <div className="container mx-auto my-8 p-6 bg-white rounded max-w-4xl">
       <h1 className="text-4xl font-bold mb-6 text-center">
@@ -99,6 +117,40 @@ export default function sendMessage() {
           </div>
         </form>
       </Form>
+
+       <div className="space-y-4 my-8">
+        <div className="space-y-2">
+          <Button
+            onClick={fetchSuggestedMessages}
+            className="my-4"
+            disabled={isSuggestLoading}
+          >
+            Suggest Messages
+          </Button>
+          <p>Click on any message below to select it.</p>
+        </div>
+        <Card>
+          <CardHeader>
+            <h3 className="text-xl font-semibold">Messages</h3>
+          </CardHeader>
+          <CardContent className="flex flex-col space-y-4">
+            {error ? (
+              <p className="text-red-500">{error.message}</p>
+            ) : (
+              parseStringMessages(completion).map((message, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="mb-2"
+                  onClick={() => handleMessageClick(message)}
+                >
+                  {message}
+                </Button>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       <Separator className="my-6" />
       <div className="text-center">
