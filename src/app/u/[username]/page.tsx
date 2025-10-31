@@ -92,7 +92,7 @@ export default function sendMessage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Send Anonymous Message to @{username}</FormLabel>
-                <FormControl>
+                <FormControl className="border rounded-md p-2 border-gray-400 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
                   <textarea
                     placeholder="Write your anonymous message here"
                     className="resize-none"
