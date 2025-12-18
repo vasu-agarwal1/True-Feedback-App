@@ -9,7 +9,7 @@ import { AcceptMessageSchema } from "@/schemas/acceptMessageSchema"
 import { ApiResponse } from "@/types/ApiResponse"
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios, { AxiosError } from "axios"
-import { Loader2, RefreshCcw } from "lucide-react"
+import { Loader2, RefreshCcw, Copy, Check } from "lucide-react"
 import { User } from "next-auth"
 import { useSession } from "next-auth/react"
 import { useCallback, useEffect, useState } from "react"
@@ -23,6 +23,7 @@ const page = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isSwitchLoading, setIsSwitchLoading] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const handleDeleteMessage = (message: Message) => {
     setMessages(messages.filter((m) => m._id !== message._id))
@@ -98,69 +99,93 @@ const page = () => {
   const baseUrl = `${window.location.protocol}//${window.location.host}`
   const profileUrl = `${baseUrl}/u/${username}`
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(profileUrl)
-    toast("URL Copied", {description: "Your unique profile URL has been copied to clipboard"})
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(profileUrl)
+      setCopied(true)
+      toast("URL Copied", {description: "Your unique profile URL has been copied."})
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      toast("Copy failed", {description: "Please copy the link manually."})
+    }
   }
 
 
     return (
-    <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
-      <h1 className="text-4xl font-bold mb-4">User Dashboard</h1>
+    <div className="min-h-[calc(100dvh-80px)] bg-gradient-to-b from-sky-50/70 to-white dark:from-slate-900 dark:to-slate-950 py-8">
+      <div className="mx-4 md:mx-8 lg:mx-auto w-full max-w-6xl">
+        <header className="mb-6">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
+            <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">Dashboard</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">Manage your anonymous messages and sharing link.</p>
+        </header>
 
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold mb-2">Copy Your Unique Link</h2>{' '}
-        <div className="flex items-center border p-2 rounded-2xl bg-zinc-100">
-          <input
-            type="text"
-            value={profileUrl}
-            disabled
-            className="input input-bordered w-full p-2 mr-2"
-          />
-          <Button onClick={copyToClipboard}>Copy</Button>
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <Switch
-          {...register('acceptMessages')}
-          checked={acceptMessages}
-          onCheckedChange={handleSwitchChange}
-          disabled={isSwitchLoading}
-        />
-        <span className="ml-2">
-          Accept Messages: {acceptMessages ? 'On' : 'Off'}
-        </span>
-      </div>
-      <Separator />
-
-      <Button
-        className="mt-4"
-        variant="outline"
-        onClick={(e) => {
-          e.preventDefault();
-          fetchMessages(true);
-        }}
-      >
-        {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <RefreshCcw className="h-4 w-4" />
-        )}
-      </Button>
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {messages.length > 0 ? (
-          messages.map((message, index) => (
-            <MessageCard
-              key={String(message._id)}
-              message={message}
-              onMessageDelete={handleDeleteMessage}
+        <section className="mb-6 rounded-xl border bg-background shadow-sm p-4 md:p-5">
+          <h2 className="text-base font-medium mb-3">Your public link</h2>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={profileUrl}
+              disabled
+              className="w-full rounded-lg border border-input bg-muted/40 px-3 py-2 text-sm text-foreground/90"
             />
-          ))
-        ) : (
-          <p>No messages to display.</p>
-        )}
+            <Button onClick={copyToClipboard} variant={copied ? "secondary" : "default"} className="shrink-0">
+              {copied ? (<span className="inline-flex items-center"><Check className="mr-2 h-4 w-4"/>Copied</span>) : (<span className="inline-flex items-center"><Copy className="mr-2 h-4 w-4"/>Copy</span>)}
+            </Button>
+          </div>
+        </section>
 
+        <section className="mb-6 rounded-xl border bg-background shadow-sm p-4 md:p-5 flex items-center justify-between">
+          <div>
+            <p className="text-base font-medium">Accept new messages</p>
+            <p className="text-sm text-muted-foreground">Turn off to stop receiving new messages.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              {...register('acceptMessages')}
+              checked={acceptMessages}
+              onCheckedChange={handleSwitchChange}
+              disabled={isSwitchLoading}
+            />
+            <span className="text-sm text-muted-foreground">{acceptMessages ? 'On' : 'Off'}</span>
+          </div>
+        </section>
+
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold">Messages {messages.length ? `(${messages.length})` : ''}</h2>
+          <Button
+            variant="outline"
+            onClick={(e) => {
+              e.preventDefault();
+              fetchMessages(true);
+            }}
+          >
+            {isLoading ? (
+              <span className="inline-flex items-center"><Loader2 className="mr-2 h-4 w-4 animate-spin" />Refreshing</span>
+            ) : (
+              <span className="inline-flex items-center"><RefreshCcw className="mr-2 h-4 w-4" />Refresh</span>
+            )}
+          </Button>
+        </div>
+        <Separator />
+
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {messages.length > 0 ? (
+            messages.map((message) => (
+              <MessageCard
+                key={String(message._id)}
+                message={message}
+                onMessageDelete={handleDeleteMessage}
+              />
+            ))
+          ) : (
+            <div className="col-span-full rounded-xl border bg-background p-8 text-center">
+              <p className="text-base font-medium">No messages yet</p>
+              <p className="text-sm text-muted-foreground mt-1">Share your public link to start receiving messages.</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
     
