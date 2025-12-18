@@ -80,86 +80,112 @@ export default function sendMessage() {
   }
 
   return (
-    <div className="container mx-auto my-8 p-6 bg-white rounded max-w-4xl">
-      <h1 className="text-4xl font-bold mb-6 text-center">
-        Public Profile Link
-      </h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Send Anonymous Message to @{username}</FormLabel>
-                <FormControl className="border rounded-md p-2 border-gray-400 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
-                  <textarea
-                    placeholder="Write your anonymous message here"
-                    className="resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex justify-center">
-            {isLoading ? (
-              <Button disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
-              </Button>
-            ) : (
-              <Button type="submit" disabled={isLoading || !messageContent}>
-                Send It
-              </Button>
-            )}
-          </div>
-        </form>
-      </Form>
-
-       <div className="space-y-4 my-8">
-        <div className="space-y-2">
-          <Button
-            onClick={fetchSuggestedMessages}
-            className="my-4"
-            disabled={isSuggestLoading}
-          >
-            Suggest Messages
-          </Button>
-          <p>Click on any message below to select it.</p>
+    <div className="min-h-[calc(100dvh-80px)] bg-gradient-to-b from-blue-50/70 to-white dark:from-slate-900 dark:to-slate-950">
+      <div className="container mx-auto max-w-3xl px-4 py-10">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Send an Anonymous Message
+            </span>
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">to @{username}</p>
         </div>
-        <Card>
-          <CardHeader>
-            <h3 className="text-xl font-semibold">Messages</h3>
-          </CardHeader>
-          <CardContent className="flex flex-col space-y-4">
-            {error ? (
-              <p className="text-red-500">{error.message}</p>
-            ) : (
-              parseStringMessages(completion).map((message, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  className="mb-2"
-                  onClick={() => handleMessageClick(message)}
-                >
-                  {message}
-                </Button>
-              ))
-            )}
+
+        <Card className="shadow-md">
+          <CardContent className="pt-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="content"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">Your message</FormLabel>
+                      <FormControl>
+                        <textarea
+                          placeholder="Write your anonymous message here..."
+                          className="mt-2 min-h-36 w-full rounded-lg border border-input bg-background px-4 py-3 text-base shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-center">
+                  {isLoading ? (
+                    <Button disabled>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </Button>
+                  ) : (
+                    <Button type="submit" disabled={isLoading || !messageContent}>
+                      Send Message
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </Form>
           </CardContent>
         </Card>
-      </div>
 
-      <Separator className="my-6" />
-      <div className="text-center">
-        <div className="mb-4">Get Your Unique Message Board</div>
-        <Link href={'/sign-up'}>
-          <Button>Create Your Account</Button>
-        </Link>
+        <div className="space-y-4 my-10">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h3 className="text-lg font-semibold">Need inspiration?</h3>
+              <p className="text-sm text-muted-foreground">Click a suggestion to fill the box.</p>
+            </div>
+            <Button
+              onClick={fetchSuggestedMessages}
+              variant="secondary"
+              disabled={isSuggestLoading}
+            >
+              {isSuggestLoading ? (
+                <span className="inline-flex items-center"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Getting...</span>
+              ) : (
+                'Suggest Messages'
+              )}
+            </Button>
+          </div>
+
+          <Card className="shadow-sm">
+            <CardHeader>
+              <h3 className="text-xl font-semibold">Suggestions</h3>
+            </CardHeader>
+            <CardContent>
+              {error ? (
+                <p className="text-red-500">{error.message}</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {parseStringMessages(completion)
+                    .map((m) => m.trim())
+                    .filter(Boolean)
+                    .map((message, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        className="justify-start text-left whitespace-normal h-auto py-2 px-3 hover:-translate-y-0.5 transition"
+                        onClick={() => handleMessageClick(message)}
+                      >
+                        {message}
+                      </Button>
+                    ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <Separator className="my-10" />
+        <div className="text-center">
+          <div className="mb-3 text-base">Get your own anonymous message board</div>
+          <Link href={'/sign-up'}>
+            <Button className="shadow">Create Your Account</Button>
+          </Link>
+        </div>
       </div>
-      </div>
+    </div>
 
   )
 }
