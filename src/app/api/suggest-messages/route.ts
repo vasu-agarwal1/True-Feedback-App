@@ -1,9 +1,9 @@
 import { google } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { generateText } from 'ai';
 import { NextResponse } from 'next/server';
 
 // Allow streaming responses up to 30 seconds
-export const maxDuration = 30;
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
   try {
@@ -28,14 +28,14 @@ export async function POST(req: Request) {
     
     Generate 3 new questions following this exact format:`;
 
-    const result = streamText({
+    const { text } = await generateText({
       model: google('gemini-2.5-flash'), // Full model path for Google AI
       prompt,
       temperature: 0.8,
     });
 
-    // Return the streaming response
-    return result.toTextStreamResponse();
+    
+    return NextResponse.json({ result: text }, { status: 200 });
     
   } catch (error: any) {
     console.error('Error generating message suggestions:', error);
